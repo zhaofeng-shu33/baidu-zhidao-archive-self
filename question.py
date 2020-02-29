@@ -20,6 +20,8 @@ def process_question_from_str(st):
         if i.text.find(username) > 0:
             break
         index += 1
+    if index == len(repliers):
+        return ''
     if index == 0:
         my_answer = soup.find(class_='best-text')
         if my_answer is None:
@@ -27,10 +29,7 @@ def process_question_from_str(st):
     else:
         index -= 1
         my_answer = soup.find_all(class_='answer-text')[index]
-    try:
-        my_answer_text = my_answer.text.replace('展开全部','')
-    except:
-        pdb.set_trace()
+    my_answer_text = my_answer.text.replace('展开全部','')
     my_answer_text = my_answer_text.replace('\n\n\n','')
     try:
         question = soup.find(class_='q-content').find_all('span')[1]
