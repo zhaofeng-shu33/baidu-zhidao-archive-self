@@ -1,5 +1,6 @@
 import os
 import pdb
+import imghdr
 
 from bs4 import BeautifulSoup
 import requests
@@ -42,15 +43,16 @@ def process_question_from_str(st):
         question_img = soup.find(class_='q-img-ul').find('img')
         if question_img:
             img_url = question_img['src']
-            img_name = img_url.split('/')[-1] + '.jpg'
-            download_image(img_name, img_url)
-            question_text += '\n![](%s)\n' % img_name
+            img_name = download_image(img_url, 'answer')
+            if img_name is not None:
+                question_text += '\n![](%s)\n' % img_name
     except AttributeError:
         pass
     return question_text + '\n\n' + my_answer_text
 
-def download_image(img_name, img_url):
-    file_name = os.path.join('build', img_name)
+def download_image(img_url, folder):
+    img_name_first_part = img_url.split('/')[-1]
+    file_name = os.path.join('build', img_name_first_part)
     if not os.path.exists(file_name):
         r = requests.get(img_url, stream=True)
         if r.status_code == 200:
@@ -58,6 +60,13 @@ def download_image(img_name, img_url):
                 shutil.copyfileobj(r.raw, f)
         else:
             print("Download for %s failed" % img_url)
+    img_ext = imghdr.what(file_name)
+    if img_ext is None:
+        return None
+    img_name = img_name_first_part + '.' + img_ext
+    new_file = os.path.join(folder, img_name)
+    shutil.copy(file_name, new_file)
+    return img_name
 
 def process_question_from_file(file_name):
     with open(file_name) as f:
