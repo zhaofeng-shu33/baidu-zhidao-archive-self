@@ -23,7 +23,7 @@ def process_question_from_str(st, folder):
         question_img = soup.find(class_='q-img-ul').find('img')
         if question_img:
             img_url = question_img['src']
-            img_name = download_image(img_url, 'answer')
+            img_name = download_image(img_url, folder)
             if img_name is not None:
                 question_text += '\n![](%s)\n' % img_name
     except AttributeError:
