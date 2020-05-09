@@ -33,6 +33,11 @@ def process_question_from_str(st):
         my_answer = soup.find_all(class_='answer-text')[index]
     my_answer_text = my_answer.text.replace('展开全部','')
     my_answer_text = my_answer_text.replace('\n\n\n','')
+    answer_img = my_answer.find('img')
+    if answer_img:
+        img_url = answer_img['src'].split('?')[0]
+        img_name = download_image(img_url, 'answer')
+        my_answer_text += '\n![](%s)\n' % img_name
     try:
         question = soup.find(class_='q-content').find_all('span')[1]
     except Exception as e:
